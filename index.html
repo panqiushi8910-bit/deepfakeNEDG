@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>DeepFace Studio</title>
+<style>
+:root{--bg:#060812;--card:#101729;--line:#2b3657;--text:#f5f7ff;--muted:#919ab4;--cyan:#6ef3ff;--green:#55ffb6;--purple:#9b6dff;--warn:#ffd36b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;background:radial-gradient(circle at 15% 0%,rgba(110,243,255,.23),transparent 28%),radial-gradient(circle at 100% 8%,rgba(155,109,255,.22),transparent 35%),linear-gradient(180deg,#0b1020 0%,#060812 100%);padding:20px 15px 34px}
+.screen{max-width:430px;margin:0 auto}.hidden{display:none!important}
+.logo{width:62px;height:62px;border-radius:19px;background:linear-gradient(135deg,var(--cyan),var(--purple));box-shadow:0 0 34px rgba(110,243,255,.28)}
+h1{font-size:35px;line-height:.98;margin:18px 0 8px;font-weight:950;letter-spacing:-.055em}
+.sub{color:var(--muted);font-weight:800;font-size:15px;line-height:1.4}
+.login-card,.card{background:linear-gradient(180deg,rgba(21,29,49,.96),rgba(11,16,30,.97));border:1px solid var(--line);border-radius:28px;padding:20px;margin:18px 0;box-shadow:0 18px 60px rgba(0,0,0,.25),inset 0 0 0 1px rgba(255,255,255,.035)}
+.input{width:100%;margin-top:14px;padding:17px 16px;border-radius:18px;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.055);color:var(--text);font-size:17px;font-weight:750;outline:none}.input::placeholder{color:#737d99}
+.btn{width:100%;border:0;border-radius:24px;padding:19px 18px;margin-top:16px;font-size:20px;font-weight:950;color:#06101d;background:linear-gradient(135deg,var(--cyan),var(--green));box-shadow:0 15px 38px rgba(110,243,255,.22)}
+.btn.secondary{background:rgba(255,255,255,.08);color:var(--text);box-shadow:none;border:1px solid rgba(255,255,255,.12)}.btn:disabled{background:#5d6371;color:#151821;box-shadow:none}
+.top{display:flex;align-items:center;gap:13px;margin:4px 0 18px}.top .logo{width:48px;height:48px;border-radius:15px}.top h1{font-size:29px;margin:0}.beta{margin-left:auto;background:var(--cyan);color:#06101d;border-radius:20px;padding:8px 12px;font-weight:950;font-size:13px}
+.row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.title{font-size:21px;font-weight:950;letter-spacing:-.03em}.status{font-size:14px;color:var(--muted);font-weight:850}.status.done{color:var(--green)}.status.active{color:var(--cyan)}
+.upload{border:2px dashed rgba(135,154,212,.46);border-radius:22px;background:rgba(255,255,255,.035);min-height:154px;display:flex;gap:13px;align-items:center;padding:14px;position:relative;overflow:hidden}
+.preview{width:112px;height:112px;border-radius:18px;background:#070b17;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;color:#7f89a7;font-size:12px;font-weight:900;text-align:center}.preview img,.preview video{width:100%;height:100%;object-fit:cover;display:block}
+.uptext{flex:1;min-width:0}.big{font-size:18px;font-weight:950;line-height:1.2}.small{font-size:13px;color:var(--muted);font-weight:800;margin-top:7px;word-break:break-all}.fileline{display:none;margin-top:9px;font-size:12px;color:#c2cae4;font-weight:800}
+.bar{height:9px;background:#050914;border:1px solid #263253;border-radius:99px;width:100%;overflow:hidden;margin-top:12px}.fill{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:99px;transition:width .12s linear}input[type=file]{display:none}
+.face-dataset{border:2px dashed rgba(135,154,212,.46);border-radius:22px;background:rgba(255,255,255,.035);padding:16px;margin-top:12px;display:block}
+.dataset-head{display:flex;align-items:center;gap:13px}
+.dataset-icon{width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,rgba(110,243,255,.18),rgba(155,109,255,.20));border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:22px;font-weight:950;flex:0 0 auto}
+.face-thumbs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:14px}
+.face-thumb{height:58px;border-radius:14px;background:#070b17;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;overflow:hidden;color:#7f89a7;font-size:10px;font-weight:900;text-align:center}
+.face-thumb img,.face-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.analysis{margin-top:14px;padding:14px;border-radius:18px;background:rgba(110,243,255,.07);border:1px solid rgba(110,243,255,.18);font-size:12px;color:#b9c3e6;font-weight:800;line-height:1.55}
+.analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:8px}
+.check{color:var(--green)}
+.console{display:none;margin-top:16px;background:#050812;border:1px solid #263253;border-radius:22px;padding:16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#b9c3e6;line-height:1.65}.ok{color:var(--green)}.now{color:var(--cyan)}.warn{color:var(--warn)}
+.render-status{margin-top:12px;padding:12px;border-radius:16px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}
+.render-status .percent{font-size:24px;font-weight:950;color:var(--cyan);letter-spacing:-.03em}
+.render-status .message{font-size:13px;color:#b9c3e6;font-weight:800;margin-top:4px;line-height:1.45}
+.render-status .submsg{font-size:11px;color:#7e879f;font-weight:800;margin-top:6px}
+.result{display:none;margin-top:16px;border-radius:24px;padding:16px;background:linear-gradient(180deg,rgba(85,255,182,.12),rgba(110,243,255,.055));border:1px solid rgba(85,255,182,.35)}
+.player{margin-top:13px;border-radius:20px;overflow:hidden;background:#050812;border:1px solid rgba(255,255,255,.1);min-height:210px;display:flex;align-items:center;justify-content:center;position:relative}.player video{width:100%;height:auto;display:block;max-height:330px;background:#050812}.fakeplay{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.92);color:#07101d;display:flex;align-items:center;justify-content:center;font-size:31px;font-weight:950}.tag{position:absolute;left:12px;top:12px;background:rgba(0,0,0,.54);padding:6px 9px;border-radius:10px;font-size:11px;color:#dfe6ff;font-weight:850;z-index:2}
+.foot{text-align:center;color:#7e879f;font-weight:850;font-size:12px;letter-spacing:.08em;margin-top:18px;line-height:1.5}.tip{font-size:12px;color:#7e879f;font-weight:800;line-height:1.5;margin-top:12px}
+</style></head>
+<body>
+<section id="loginScreen" class="screen"><div class="logo"></div><h1>DeepFace<br>Studio</h1><div class="sub">Private AI video identity transfer.<br>Secure cloud rendering for creators.</div><div class="login-card"><input id="account" class="input" placeholder="Account / Email"><input id="password" class="input" placeholder="Password" type="password"><button id="loginBtn" class="btn">Log In</button><button id="trialBtn" class="btn secondary">Start Free Trial</button><div class="tip">Demo account accepted. No network connection required.</div></div><div class="foot">EU-WEST-3 · ENCRYPTED SESSION · BETA ACCESS</div></section>
+<section id="appScreen" class="screen hidden"><div class="top"><div class="logo"></div><div><h1>DeepFace Studio</h1><div class="sub">Neural Video Identity Transfer</div></div><div class="beta">PRO</div></div>
+<div class="card"><div class="row"><div class="title">1. Source Video</div><div id="videoStatus" class="status">Waiting</div></div><label class="upload"><input id="videoInput" type="file" accept="video/*"><div id="videoPreview" class="preview">VIDEO<br>PREVIEW</div><div class="uptext"><div id="videoBig" class="big">Tap to select source video</div><div id="videoSmall" class="small">MP4 / MOV supported</div><div id="videoFile" class="fileline">toilet_paper_take_01.mov · 428.7 MB</div><div class="bar"><div id="videoFill" class="fill"></div></div></div></label></div>
+
+<div class="card">
+  <div class="row"><div class="title">2. Face Dataset</div><div id="faceStatus" class="status">Waiting</div></div>
+  <div class="small">Select multiple face images at once. More angles improve identity accuracy and side-face stability.</div>
+  <label class="face-dataset">
+    <input id="faceInput" type="file" multiple accept="image/*,video/*">
+    <div class="dataset-head">
+      <div class="dataset-icon">＋</div>
+      <div class="uptext">
+        <div id="faceBig" class="big">Upload Face Dataset</div>
+        <div id="faceSmall" class="small">Front / left / right / up / down recommended</div>
+        <div id="faceFile" class="fileline">No samples selected</div>
+      </div>
+    </div>
+    <div id="faceThumbs" class="face-thumbs">
+      <div class="face-thumb">FRONT</div>
+      <div class="face-thumb">LEFT</div>
+      <div class="face-thumb">RIGHT</div>
+      <div class="face-thumb">UP</div>
+      <div class="face-thumb">DOWN</div>
+    </div>
+    <div id="analysis" class="analysis">
+      Dataset Analysis<br>
+      Face Samples: 0<br>
+      Quality Score: --<br>
+      <div class="analysis-grid">
+        <span>Front View</span><span>Pending</span>
+        <span>Left Profile</span><span>Pending</span>
+        <span>Right Profile</span><span>Pending</span>
+        <span>Upward</span><span>Pending</span>
+        <span>Downward</span><span>Pending</span>
+      </div>
+    </div>
+    <div class="bar"><div id="faceFill" class="fill"></div></div>
+  </label>
+</div>
+
+<button id="generate" class="btn" disabled>Create Preview</button><div id="console" class="console"><div id="log1">Ready.</div><div id="log2"></div><div id="log3"></div><div id="log4"></div><div class="render-status"><div id="renderPercent" class="percent">0%</div><div id="renderMessage" class="message">Preparing secure preview...</div><div id="renderSub" class="submsg">Please keep this page open.</div></div><div class="bar"><div id="genFill" class="fill"></div></div></div>
+<div id="result" class="result"><div class="title">Output Preview</div><div class="small">Preview Only · Tap the video to play.</div><div class="player"><div class="tag">OUTPUT_PREVIEW</div><video id="resultVideo" controls playsinline preload="metadata" src="result.mp4"></video><div id="fallbackPlay" class="fakeplay hidden">▶</div></div></div><div class="foot">PRIVATE AI VIDEO LAB · SERVER: EU-WEST-3 · SESSION ENCRYPTED</div></section>
+<script>
+const $=(id)=>document.getElementById(id);
+let videoReady=false, faceReady=false, faceCount=0, selectedVideoUrl=null;
+
+function enterApp(){
+  $('loginScreen').classList.add('hidden');
+  $('appScreen').classList.remove('hidden');
+}
+$('loginBtn').addEventListener('click',enterApp);
+$('trialBtn').addEventListener('click',enterApp);
+
+function fileNameOrFake(file,fallback){
+  if(!file)return fallback;
+  let size=file.size?(file.size/1024/1024).toFixed(1)+' MB':'encrypted';
+  return file.name+' · '+size;
+}
+
+function videoPreview(file){
+  const preview=$('videoPreview');
+  preview.innerHTML='';
+  if(!file){preview.innerHTML='VIDEO<br>PREVIEW';return;}
+  const url=URL.createObjectURL(file);
+  selectedVideoUrl=url;
+  const v=document.createElement('video');
+  v.src=url; v.muted=true; v.playsInline=true; v.preload='metadata';
+  v.onloadedmetadata=()=>{try{v.currentTime=Math.min(0.2,v.duration/2||0)}catch(e){}};
+  preview.appendChild(v);
+}
+
+function fakeVideoUpload(file){
+  videoPreview(file);
+  $('videoFile').style.display='block';
+  $('videoFile').textContent=fileNameOrFake(file,'toilet_paper_take_01.mov · 428.7 MB');
+  $('videoStatus').textContent='Uploading 0%';
+  $('videoStatus').className='status active';
+  $('videoBig').textContent='Uploading source video';
+  $('videoSmall').textContent='Secure transfer started';
+  $('videoFill').style.width='0%';
+  let p=0;
+  const timer=setInterval(()=>{
+    p+=Math.floor(Math.random()*16)+14;
+    if(p>=100){
+      p=100; clearInterval(timer);
+      $('videoStatus').textContent='Upload Complete';
+      $('videoStatus').className='status done';
+      $('videoFill').style.width='100%';
+      $('videoBig').textContent='Source video ready';
+      $('videoSmall').textContent='Video queued for preview';
+      videoReady=true; checkReady();
+    }else{
+      $('videoStatus').textContent='Uploading '+p+'%';
+      $('videoFill').style.width=p+'%';
+    }
+  },90);
+}
+$('videoInput').addEventListener('change',(e)=>fakeVideoUpload(e.target.files[0]));
+
+function makeThumb(file){
+  const box=document.createElement('div');
+  box.className='face-thumb';
+  const url=URL.createObjectURL(file);
+  if(file.type && file.type.startsWith('image/')){
+    const img=document.createElement('img');
+    img.src=url; box.appendChild(img);
+  }else{
+    const v=document.createElement('video');
+    v.src=url; v.muted=true; v.playsInline=true; v.preload='metadata';
+    box.appendChild(v);
+  }
+  return box;
+}
+
+function updateFaceDataset(files){
+  faceCount=files.length;
+  const thumbs=$('faceThumbs');
+  thumbs.innerHTML='';
+  files.slice(0,10).forEach(f=>thumbs.appendChild(makeThumb(f)));
+  if(faceCount===0){
+    ['FRONT','LEFT','RIGHT','UP','DOWN'].forEach(t=>{
+      const d=document.createElement('div'); d.className='face-thumb'; d.textContent=t; thumbs.appendChild(d);
+    });
+  }
+
+  $('faceFile').style.display='block';
+  $('faceFile').textContent=faceCount+' files selected';
+  $('faceStatus').textContent=faceCount+' Samples';
+  $('faceStatus').className=faceCount>=2?'status done':'status active';
+  $('faceBig').textContent=faceCount>=2?'Face dataset ready':'Upload more face samples';
+  $('faceSmall').textContent=faceCount>=2?'Multiple angles detected':'At least 2 samples recommended';
+  $('faceFill').style.width=Math.min(faceCount*20,100)+'%';
+
+  let quality='Poor', score='62%';
+  if(faceCount>=2){quality='Basic';score='78%'}
+  if(faceCount>=3){quality='Good';score='88%'}
+  if(faceCount>=5){quality='Excellent';score='96%'}
+
+  const checks=[
+    ['Front View', faceCount>=1],
+    ['Left Profile', faceCount>=2],
+    ['Right Profile', faceCount>=3],
+    ['Upward', faceCount>=4],
+    ['Downward', faceCount>=5]
+  ];
+  $('analysis').innerHTML =
+    'Dataset Analysis<br>' +
+    'Face Samples: '+faceCount+'<br>' +
+    'Quality Score: '+score+' · '+quality+
+    '<div class="analysis-grid">' +
+    checks.map(([name,ok])=>'<span>'+name+'</span><span class="'+(ok?'check':'')+'">'+(ok?'✓ Detected':'Pending')+'</span>').join('') +
+    '</div>';
+
+  faceReady=faceCount>=2;
+  checkReady();
+}
+$('faceInput').addEventListener('change',(e)=>updateFaceDataset([...e.target.files]));
+
+function checkReady(){
+  $('generate').disabled=!(videoReady&&faceReady);
+}
+
+let isRendering=false;
+let renderProgress=0;
+let renderTimer=null;
+let hiddenClickCount=0;
+let renderStep=0;
+
+$('generate').addEventListener('click',()=>{
+  if(isRendering){
+    hiddenClickCount++;
+    if(hiddenClickCount>=10){
+      forceCompleteRender();
+    }
+    return;
+  }
+  startRender();
+});
+
+function startRender(){
+  isRendering=true;
+  renderProgress=0;
+  hiddenClickCount=0;
+  renderStep=0;
+
+  $('generate').disabled=false;
+  $('generate').textContent='Rendering...';
+  $('console').style.display='block';
+  $('result').style.display='none';
+  $('genFill').style.width='0%';
+  $('renderPercent').textContent='0%';
+  $('renderMessage').textContent='Preparing secure preview...';
+  $('renderSub').textContent='Please keep this page open.';
+  ['log1','log2','log3','log4'].forEach(id=>$(id).textContent='');
+
+  $('log1').innerHTML='<span class="now">> Analyzing dataset...</span>';
+
+  renderTimer=setInterval(()=>{
+    // 信号差时的慢速假进度：前期能走，之后越来越慢，最高卡在 37%
+    if(renderProgress<18){
+      renderProgress += 1.2;
+    }else if(renderProgress<28){
+      renderProgress += 0.45;
+    }else if(renderProgress<37){
+      renderProgress += 0.18;
+    }else{
+      renderProgress += 0.04;
+    }
+
+    const shown=Math.min(Math.floor(renderProgress),37);
+    $('genFill').style.width=shown+'%';
+    $('renderPercent').textContent=shown+'%';
+
+    if(shown<12){
+      $('renderMessage').textContent='Analyzing uploaded dataset...';
+      $('renderSub').textContent='Current progress '+shown+'%. Please wait.';
+    }else if(shown<24){
+      $('renderMessage').textContent='Poor network signal. Waiting for secure channel...';
+      $('renderSub').textContent='Current progress '+shown+'%. Retrying connection.';
+    }else if(shown<34){
+      $('renderMessage').textContent='Matching identity features...';
+      $('renderSub').textContent='Current progress '+shown+'%. Please wait.';
+    }else{
+      $('renderMessage').textContent='Preview render delayed by unstable connection.';
+      $('renderSub').textContent='Current progress '+shown+'%. Please wait or retry later.';
+    }
+
+    if(shown>=12 && renderStep===0){
+      $('log2').innerHTML='<span class="warn">> Network unstable. Waiting for secure channel...</span>';
+      renderStep++;
+    }
+    if(shown>=24 && renderStep===1){
+      $('log3').innerHTML='<span class="now">> Matching identity...</span>';
+      renderStep++;
+    }
+    if(shown>=34 && renderStep===2){
+      $('log4').innerHTML='<span class="warn">> Preview render delayed. Current progress: '+shown+'%</span>';
+      renderStep++;
+    }
+  },260);
+}
+
+function forceCompleteRender(){
+  if(!isRendering)return;
+  clearInterval(renderTimer);
+  $('log4').innerHTML='<span class="ok">> Connection restored. Generating preview...</span>';
+  $('renderMessage').textContent='Connection restored. Generating preview...';
+  $('renderSub').textContent='Accelerating render. Please wait.';
+
+  let p=Math.max(40, Math.floor(renderProgress));
+  const fast=setInterval(()=>{
+    p += 18;
+    if(p>=100){
+      p=100;
+      clearInterval(fast);
+      $('genFill').style.width='100%';
+      $('renderPercent').textContent='100%';
+      $('renderMessage').textContent='Preview complete.';
+      $('renderSub').textContent='Output is ready.';
+      setTimeout(showResult,250);
+    }else{
+      $('genFill').style.width=p+'%';
+      $('renderPercent').textContent=p+'%';
+      $('renderSub').textContent='Current progress '+p+'%. Finalizing output.';
+    }
+  },110);
+}
+
+function showResult(){
+  const rv=$('resultVideo');
+  const fallback=$('fallbackPlay');
+  const candidates=['result.mov','result.mp4','result.m4v','result.webm'];
+  let i=0;
+
+  function useFallback(){
+    if(selectedVideoUrl){
+      rv.src=selectedVideoUrl;
+      rv.load();
+    }else{
+      rv.classList.add('hidden');
+      fallback.classList.remove('hidden');
+    }
+    finish();
+  }
+
+  function finish(){
+    isRendering=false;
+    hiddenClickCount=0;
+    $('result').style.display='block';
+    $('generate').textContent='Create Preview Again';
+    $('generate').disabled=false;
+  }
+
+  function tryNext(){
+    if(i>=candidates.length){useFallback();return;}
+    rv.onerror=()=>{i++;tryNext();};
+    rv.onloadeddata=()=>finish();
+    rv.src=candidates[i];
+    rv.load();
+  }
+  tryNext();
+}
+</script></body></html>
